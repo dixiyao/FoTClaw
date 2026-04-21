@@ -2,8 +2,8 @@
 
 # FoT
 
-[![FoT](https://img.shields.io/badge/arXiv-add%20link-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2604.16778)
-[![Homepage](https://img.shields.io/badge/Homepage-add%20link-2563eb?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dixiyao.github.io/fot)
+    [![arXiv](https://img.shields.io/badge/arXiv-2604.16778-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2604.16778)
+[![Homepage](https://img.shields.io/badge/Homepage-Visit%20Site-2563eb?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dixiyao.github.io/fot)
 
 </div>
 
@@ -364,5 +364,13 @@ It is worth continuing to explore the design space of FoT, including personaliza
 
 # Citation
 ```
-
+@misc{yao2026federationtextinsightsharing,
+      title={Federation over Text: Insight Sharing for Multi-Agent Reasoning}, 
+      author={Dixi Yao and Tahseen Rabbani and Tian Li},
+      year={2026},
+      eprint={2604.16778},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2604.16778}, 
+}
 ```

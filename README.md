@@ -16,40 +16,33 @@ There are strong connections between FL and FoT. In FL, clients may adopt differ
 
 Inspired by techniques from distributed and federated learning, FoT opens an interesting design space for improving the efficiency and effectiveness of multi-agent collaborative reasoning.
 
-# FoTClaw
-FoTClaw is an orchestration framework for **Federation over Text (FoT)** built on top of `openclaw`.
+## FoT Runtime
+FoT is an orchestration framework for **Federation over Text (FoT)** built on top of `openclaw`.
 
 It lets you run multiple OpenClaw agents in parallel, recover their reasoning traces after execution, and aggregate those traces into a persistent shared insight library. The result is a practical testbed for studying how agents can improve collectively through text-based reasoning exchange rather than parameter sharing.
 
-- `⚡` Run multiple OpenClaw agents concurrently under FoTClaw supervision.
+- `⚡` Run multiple OpenClaw agents concurrently under FoT supervision.
 - `🧠` Recover transcripts from finished or broken runs.
 - `📝` Convert transcripts into structured local reasoning traces.
 - `🔗` Aggregate traces into a persistent shared insight library.
 - `📚` Inject the current insight library into new agent workspaces automatically.
+- `🛠️` Subclass the local and global FoT reasoning interfaces to plug in custom trace extraction and aggregation algorithms.
 
 ## Table of Contents
-- [FoT](#fot)
 - [Federation over Text](#federation-over-text)
-- [FoTClaw](#fotclaw)
-  - [Table of Contents](#table-of-contents)
-  - [Architecture](#architecture)
-  - [Installation](#installation)
-    - [Requirements](#requirements)
-    - [Setup](#setup)
-  - [Quick Start](#quick-start)
-  - [Command Overview](#command-overview)
-  - [How the FoT Pipeline Works](#how-the-fot-pipeline-works)
-  - [Algorithm Interfaces](#algorithm-interfaces)
-    - [Local Reasoning Interface](#local-reasoning-interface)
-    - [Global Aggregation Interface](#global-aggregation-interface)
-    - [Return Format](#return-format)
-  - [Replacing the Default Algorithms](#replacing-the-default-algorithms)
-    - [Minimal Example](#minimal-example)
-  - [Configuration](#configuration)
-  - [State and Artifacts](#state-and-artifacts)
-  - [Repository Layout](#repository-layout)
-  - [OpenClaw Integration Notes](#openclaw-integration-notes)
-  - [Research Framing](#research-framing)
+- [FoT Runtime](#fot-runtime)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Command Overview](#command-overview)
+- [How the FoT Pipeline Works](#how-the-fot-pipeline-works)
+- [Algorithm Interfaces](#algorithm-interfaces)
+- [Replacing the Default Algorithms](#replacing-the-default-algorithms)
+- [Configuration](#configuration)
+- [State and Artifacts](#state-and-artifacts)
+- [Repository Layout](#repository-layout)
+- [OpenClaw Integration Notes](#openclaw-integration-notes)
+- [Research Framing](#research-framing)
 - [Citation](#citation)
 
 ## Architecture
@@ -63,7 +56,7 @@ The repository is split into two layers:
 
 At a high level:
 
-- `fotclaw` hosts and manages agents.
+- `src/fotclaw` hosts and manages agents.
 - `fot` defines how local reasoning traces are extracted and how global insights are aggregated.
 
 ## Installation
@@ -77,8 +70,8 @@ At a high level:
 ### Setup
 
 ```bash
-conda create -n fotclaw python=3.12 -y
-conda activate fotclaw
+conda create -n fot python=3.12 -y
+conda activate fot
 python -m pip install --upgrade pip
 python -m pip install -e .
 ```
@@ -94,92 +87,92 @@ python -m pip install -e ".[dev]"
 Start a background agent:
 
 ```bash
-fotclaw agent --message "Solve the task in the current workspace."
+fot agent --message "Solve the task in the current workspace."
 ```
 
 Create or reuse a stable named agent shell:
 
 ```bash
-fotclaw agent --name math
+fot agent --name math
 ```
 
 Run work on a named agent:
 
 ```bash
-fotclaw agent --name math --message "Work on the math task."
+fot agent --name math --message "Work on the math task."
 ```
 
 Inspect agent state:
 
 ```bash
-fotclaw show agent --name math
+fot show agent --name math
 ```
 
-List all FoTClaw-managed agents:
+List all FoT-managed agents:
 
 ```bash
-fotclaw list
+fot list
 ```
 
 Start aggregation:
 
 ```bash
-fotclaw aggregate
+fot aggregate
 ```
 
 Inspect the aggregation worker and the shared insight library:
 
 ```bash
-fotclaw show agent --name aggregate
+fot show agent --name aggregate
 ```
 
 For detailed command usage:
 
 ```bash
-fotclaw --help
-fotclaw agent --help
-fotclaw show agent --help
+fot --help
+fot agent --help
+fot show agent --help
 ```
 
 ## Command Overview
 
-FoTClaw provides these main commands:
+FoT provides these main commands:
 
-- `fotclaw agent`
-- `fotclaw list`
-- `fotclaw show agent`
-- `fotclaw stop`
-- `fotclaw delete agent`
-- `fotclaw aggregate`
-- `fotclaw clean`
+- `fot agent`
+- `fot list`
+- `fot show agent`
+- `fot stop`
+- `fot delete agent`
+- `fot aggregate`
+- `fot clean`
 
 The root CLI help now describes how each command is used, and command-specific help is available for the major subcommands.
 
 ## How the FoT Pipeline Works
 
-When an agent finishes or breaks, FoTClaw separates execution from FoT postprocessing:
+When an agent finishes or breaks, FoT separates execution from FoT postprocessing:
 
 1. **Execution**
    OpenClaw runs the task and produces a transcript.
 2. **Local FoT postprocessing**
-   FoTClaw runs the local step over the task result or transcript and extracts reusable reasoning artifacts.
+   FoT runs the local step over the task result or transcript and extracts reusable reasoning artifacts.
 3. **Trace persistence**
-   The extracted reasoning trace is stored under the FoTClaw state directory.
+   The extracted reasoning trace is stored under the FoT state directory.
 4. **Global aggregation**
    The server step aggregates trace files and rebuilds the shared insight library.
 
-At the project level, FoTClaw exposes two algorithm hooks:
+At the project level, FoT exposes two algorithm hooks:
 
 - Local step: transform one task result or transcript into reusable local reasoning artifacts and insights.
 - Server step: merge many local insight artifacts into the shared global insight library.
 
-Every new FoTClaw run copies the current shared library into the agent workspace as both `INSIGHTS.md` and `insight.md`, then prefixes the prompt so the agent is instructed to read and use it.
+Every new FoT run copies the current shared library into the agent workspace as both `INSIGHTS.md` and `insight.md`, then prefixes the prompt so the agent is instructed to read and use it.
 
 ## Algorithm Interfaces
 
 One of the main changes in the current codebase is that the FoT algorithm layer is now explicitly exposed through abstract interfaces.
 
-Conceptually, users can think about FoTClaw as having:
+Conceptually, users can think about FoT as having:
 
 - a `local step` interface for per-task reasoning and insight extraction
 - a `server step` interface for cross-task aggregation
@@ -219,11 +212,11 @@ Each abstract method should return a Python `dict`, but users should think in te
 - a local reasoning wrapper that turns one task result or transcript into reusable reasoning artifacts and insights
 - an aggregation wrapper that merges many local reasoning artifacts into a final global insight library
 
-FoTClaw handles the orchestration around these interfaces; users only need to implement the algorithmic behavior for local reasoning and aggregation.
+FoT handles the orchestration around these interfaces; users only need to implement the algorithmic behavior for local reasoning and aggregation.
 
 ## Replacing the Default Algorithms
 
-FoTClaw loads the local and global algorithm classes from editable settings in the project root `setting.yaml`:
+FoT loads the local and global algorithm classes from editable settings in the project root `setting.yaml`:
 
 - `local_reasoning_class`
 - `global_reasoning_class`
@@ -240,7 +233,7 @@ local_reasoning_class: mypkg.reasoning:MyLocalReasoner
 global_reasoning_class: mypkg.reasoning:MyGlobalReasoner
 ```
 
-Your module must be importable from the Python environment that runs `fotclaw`.
+Your module must be importable from the Python environment that runs `fot`.
 
 ### Minimal Example
 
@@ -301,7 +294,7 @@ class MyGlobalReasoner(GlobalReasoningServer):
 
 ## Configuration
 
-FoTClaw stores runtime state under project-local `.fotclaw/` by default. Override this with `FOTCLAW_HOME`.
+FoT stores runtime state under project-local `.fot/` by default. Override this with `FOT_HOME`.
 
 User-editable settings live in the project root `setting.yaml`:
 
@@ -316,21 +309,21 @@ User-editable settings live in the project root `setting.yaml`:
 
 Edit `setting.yaml` directly to change these values.
 
-Runtime aggregation metadata is stored separately in `./.fotclaw/config.json` by default.
+Runtime aggregation metadata is stored separately in `./.fot/config.json` by default.
 
 ## State and Artifacts
 
-By default FoTClaw stores:
+By default FoT stores:
 
 - editable settings at `./setting.yaml`
-- per-agent state under `./.fotclaw/agents/<agent_id>/`
-- extracted reasoning traces under `./.fotclaw/reasoning_traces/problem_XXXXXX.json`
-- aggregation workspace under `./.fotclaw/aggregate/`
-- persistent shared insights at `./.fotclaw/insight.json` and `./.fotclaw/insight.md`
+- per-agent state under `./.fot/agents/<agent_id>/`
+- extracted reasoning traces under `./.fot/reasoning_traces/problem_XXXXXX.json`
+- aggregation workspace under `./.fot/aggregate/`
+- persistent shared insights at `./.fot/insight.json` and `./.fot/insight.md`
 
 Each agent directory contains its record, logs, workspace, and any recovered transcript path.
 
-`fotclaw clean` removes FoTClaw-managed per-agent state, transient traces, and aggregation scratch files while preserving the persistent shared insight library.
+`fot clean` removes FoT-managed per-agent state, transient traces, and aggregation scratch files while preserving the persistent shared insight library.
 
 ## Repository Layout
 
@@ -341,19 +334,19 @@ Each agent directory contains its record, logs, workspace, and any recovered tra
 - `src/fot/fot_server.py`
   global aggregation interfaces and default implementation
 - `src/fotclaw/`
-  FoTClaw host, CLI, supervisor, configuration, and OpenClaw integration
+  FoT host, CLI, supervisor, configuration, and OpenClaw integration
 
 ## OpenClaw Integration Notes
 
-- FoTClaw creates a dedicated OpenClaw agent per background run so workspaces and transcripts stay isolated.
-- FoTClaw serializes only OpenClaw agent creation to avoid `agents add` races; actual task execution still runs in parallel.
-- FoTClaw uses OpenClaw for task execution, local FoT processing, and global aggregation so the full pipeline follows one model/runtime path.
+- FoT creates a dedicated OpenClaw agent per background run so workspaces and transcripts stay isolated.
+- FoT serializes only OpenClaw agent creation to avoid `agents add` races; actual task execution still runs in parallel.
+- FoT uses OpenClaw for task execution, local FoT processing, and global aggregation so the full pipeline follows one model/runtime path.
 - Global aggregation runs through the persistent OpenClaw agent `fotaggregation`.
-- If `openclaw` is missing, FoTClaw fails fast with an explicit error.
+- If `openclaw` is missing, FoT fails fast with an explicit error.
 
 ## Research Framing
 
-An intuitive way to think about FoTClaw is:
+An intuitive way to think about FoT is:
 
 - each OpenClaw agent is like a researcher working on its own problem
 - each local reasoning trace is that researcher's distilled procedural experience

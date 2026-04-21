@@ -51,14 +51,14 @@ def style(text: str, *codes: str) -> str:
 
 
 def header(title: str, subtitle: str | None = None) -> str:
-    lines = [f"FoTClaw {__version__}"]
+    lines = [f"FoT {__version__}"]
     if subtitle:
         lines.append(subtitle)
     return "\n".join(lines)
 
 
 def render_banner(subtitle: str | None = None) -> str:
-    return header(subtitle=subtitle, title="FoTClaw")
+    return header(subtitle=subtitle, title="FoT")
 
 
 def section(title: str) -> str:
@@ -163,10 +163,10 @@ def render_root_help() -> str:
     lines = [
         render_banner("persistent multi-agent orchestration for OpenClaw with FoT aggregation"),
         panel(
-            "FoTClaw setup",
+            "FoT setup",
             [
-                "FoTClaw is a persistent OpenClaw wrapper for background runs, trace extraction, and insight aggregation.",
-                "It stores editable settings in `setting.yaml` at the project root and runtime state under `.fotclaw/` in the project by default.",
+                "FoT is a persistent OpenClaw wrapper for background runs, trace extraction, and insight aggregation.",
+                "It stores editable settings in `setting.yaml` at the project root and runtime state under `.fot/` in the project by default.",
             ],
             width=width,
         ),
@@ -174,8 +174,8 @@ def render_root_help() -> str:
         panel(
             "Global Options",
             [
-                "--home PATH  Override the FoTClaw state directory.",
-                "-h, --help   Show help for FoTClaw or for the selected command.",
+                "--home PATH  Override the FoT state directory.",
+                "-h, --help   Show help for FoT or for the selected command.",
             ],
             accent=CYAN,
             width=width,
@@ -184,39 +184,39 @@ def render_root_help() -> str:
         panel(
             "Commands",
             [
-                "fotclaw agent        Start a background agent or reuse a named one.",
-                "fotclaw list         List all FoTClaw agents.",
-                "fotclaw show agent   Inspect one agent or the aggregate agent.",
-                "fotclaw stop         Stop a running agent.",
-                "fotclaw delete agent Delete an agent by name or id.",
-                "fotclaw aggregate    Start a background aggregation job.",
-                "fotclaw clean        Remove FoTClaw-managed state while keeping insight files.",
+                "fot agent        Start a background agent or reuse a named one.",
+                "fot list         List all FoT agents.",
+                "fot show agent   Inspect one agent or the aggregate agent.",
+                "fot stop         Stop a running agent.",
+                "fot delete agent Delete an agent by name or id.",
+                "fot aggregate    Start a background aggregation job.",
+                "fot clean        Remove FoT-managed state while keeping insight files.",
             ],
             width=width,
         ),
         "",
         _help_panel(
-            "fotclaw agent",
+            "fot agent",
             [
-                "fotclaw agent --message \"Solve the task in the current workspace.\"",
-                "fotclaw agent --name math",
-                "fotclaw agent --name math --message \"Analyze the repo.\"",
+                "fot agent --message \"Solve the task in the current workspace.\"",
+                "fot agent --name math",
+                "fot agent --name math --message \"Analyze the repo.\"",
             ],
             [
                 "Starts a background agent.",
-                "If you pass --name without an OpenClaw message, FoTClaw creates or reopens a stable named shell.",
-                "If you pass OpenClaw arguments, FoTClaw runs the task in the background.",
+                "If you pass --name without an OpenClaw message, FoT creates or reopens a stable named shell.",
+                "If you pass OpenClaw arguments, FoT runs the task in the background.",
             ],
             accent=GREEN,
             width=width,
         ),
         "",
         _help_panel(
-            "fotclaw show agent",
+            "fot show agent",
             [
-                "fotclaw show agent --name math",
-                "fotclaw show agent --id agt-math",
-                "fotclaw show agent agt-math",
+                "fot show agent --name math",
+                "fot show agent --id agt-math",
+                "fot show agent agt-math",
             ],
             [
                 "Shows the current state, output, and trace summary for one agent.",
@@ -227,12 +227,12 @@ def render_root_help() -> str:
         ),
         "",
         _help_panel(
-            "fotclaw aggregate",
-            ["fotclaw aggregate"],
+            "fot aggregate",
+            ["fot aggregate"],
             [
                 "Starts a background aggregation job that merges reasoning traces into the shared insight library.",
             ],
-            examples=["fotclaw show agent --name aggregate"],
+            examples=["fot show agent --name aggregate"],
             accent=ORANGE,
             width=width,
         ),
@@ -240,8 +240,8 @@ def render_root_help() -> str:
         panel(
             "More Help",
             [
-                "Run `fotclaw agent --help` for command-specific help.",
-                "Run `fotclaw show agent --help` for focused inspection usage.",
+                "Run `fot agent --help` for command-specific help.",
+                "Run `fot show agent --help` for focused inspection usage.",
                 "Edit `setting.yaml` directly to change models and FoT algorithm classes.",
             ],
             accent=SILVER,
@@ -257,21 +257,21 @@ def render_agent_help() -> str:
         [
             render_banner("agent command"),
             _help_panel(
-                "fotclaw agent",
+                "fot agent",
                 [
-                    "fotclaw agent --message \"...\" [--model MODEL] [other openclaw args]",
-                    "fotclaw agent --name NAME",
-                    "fotclaw agent --name NAME --message \"...\" [--model MODEL] [other openclaw args]",
+                    "fot agent --message \"...\" [--model MODEL] [other openclaw args]",
+                    "fot agent --name NAME",
+                    "fot agent --name NAME --message \"...\" [--model MODEL] [other openclaw args]",
                 ],
                 [
                     "Starts a background agent or reuses a stable named agent.",
                     "OpenClaw-style flags such as `--message` and `--model` can be passed directly.",
-                    "Use `fotclaw show agent ...` to inspect status and outputs later.",
+                    "Use `fot show agent ...` to inspect status and outputs later.",
                 ],
                 examples=[
-                    "fotclaw agent --message \"Solve the task in the current workspace.\"",
-                    "fotclaw agent --name math",
-                    "fotclaw agent --name math --message \"Review the repository.\"",
+                    "fot agent --message \"Solve the task in the current workspace.\"",
+                    "fot agent --name math",
+                    "fot agent --name math --message \"Review the repository.\"",
                 ],
                 width=width,
             ),
@@ -284,10 +284,10 @@ def render_list_help() -> str:
         [
             render_banner("list command"),
             _help_panel(
-                "fotclaw list",
-                ["fotclaw list"],
-                ["Lists all FoTClaw-managed agents and their current status."],
-                examples=["fotclaw list"],
+                "fot list",
+                ["fot list"],
+                ["Lists all FoT-managed agents and their current status."],
+                examples=["fot list"],
                 width=width,
             ),
         ]
@@ -300,16 +300,16 @@ def render_show_help() -> str:
         [
             render_banner("show command"),
             _help_panel(
-                "fotclaw show",
-                ["fotclaw show agent --name NAME", "fotclaw show agent --id AGENT_ID", "fotclaw show agent AGENT_ID"],
+                "fot show",
+                ["fot show agent --name NAME", "fot show agent --id AGENT_ID", "fot show agent AGENT_ID"],
                 [
                     "Shows one agent.",
                     "Use `aggregate` as the name to inspect the aggregation worker.",
                 ],
                 examples=[
-                    "fotclaw show agent --name math",
-                    "fotclaw show agent agt-20260411-abcdef",
-                    "fotclaw show agent --name aggregate",
+                    "fot show agent --name math",
+                    "fot show agent agt-20260411-abcdef",
+                    "fot show agent --name aggregate",
                 ],
                 width=width,
             ),
@@ -323,16 +323,16 @@ def render_show_agent_help() -> str:
         [
             render_banner("show agent command"),
             _help_panel(
-                "fotclaw show agent",
-                ["fotclaw show agent --name NAME", "fotclaw show agent --id AGENT_ID", "fotclaw show agent AGENT_ID"],
+                "fot show agent",
+                ["fot show agent --name NAME", "fot show agent --id AGENT_ID", "fot show agent AGENT_ID"],
                 [
                     "Shows one agent's status, output, transcript, and extracted trace summary.",
                     "Use `--name aggregate` to inspect the aggregation worker and shared insight library.",
                 ],
                 examples=[
-                    "fotclaw show agent --name math",
-                    "fotclaw show agent --id agt-math",
-                    "fotclaw show agent --name aggregate",
+                    "fot show agent --name math",
+                    "fot show agent --id agt-math",
+                    "fot show agent --name aggregate",
                 ],
                 width=width,
             ),
@@ -346,10 +346,10 @@ def render_stop_help() -> str:
         [
             render_banner("stop command"),
             _help_panel(
-                "fotclaw stop",
-                ["fotclaw stop AGENT_ID"],
-                ["Stops a running FoTClaw agent."],
-                examples=["fotclaw stop agt-math"],
+                "fot stop",
+                ["fot stop AGENT_ID"],
+                ["Stops a running FoT agent."],
+                examples=["fot stop agt-math"],
                 width=width,
             ),
         ]
@@ -362,10 +362,10 @@ def render_delete_help() -> str:
         [
             render_banner("delete command"),
             _help_panel(
-                "fotclaw delete",
-                ["fotclaw delete agent --name NAME", "fotclaw delete agent --id AGENT_ID"],
-                ["Deletes a FoTClaw-managed agent and its local state in the background."],
-                examples=["fotclaw delete agent --name math", "fotclaw delete agent --id agt-math"],
+                "fot delete",
+                ["fot delete agent --name NAME", "fot delete agent --id AGENT_ID"],
+                ["Deletes a FoT-managed agent and its local state in the background."],
+                examples=["fot delete agent --name math", "fot delete agent --id agt-math"],
                 width=width,
             ),
         ]
@@ -378,13 +378,13 @@ def render_delete_agent_help() -> str:
         [
             render_banner("delete agent command"),
             _help_panel(
-                "fotclaw delete agent",
-                ["fotclaw delete agent --name NAME", "fotclaw delete agent --id AGENT_ID"],
+                "fot delete agent",
+                ["fot delete agent --name NAME", "fot delete agent --id AGENT_ID"],
                 [
                     "Deletes one agent by stable name or explicit id.",
                     "This removal runs in the background.",
                 ],
-                examples=["fotclaw delete agent --name math", "fotclaw delete agent --id agt-20260411-abcdef"],
+                examples=["fot delete agent --name math", "fot delete agent --id agt-20260411-abcdef"],
                 width=width,
             ),
         ]
@@ -397,13 +397,13 @@ def render_aggregate_help() -> str:
         [
             render_banner("aggregate command"),
             _help_panel(
-                "fotclaw aggregate",
-                ["fotclaw aggregate"],
+                "fot aggregate",
+                ["fot aggregate"],
                 [
                     "Starts a background aggregation job.",
                     "The aggregation worker reads stored reasoning traces and refreshes the shared insight library.",
                 ],
-                examples=["fotclaw aggregate", "fotclaw show agent --name aggregate"],
+                examples=["fot aggregate", "fot show agent --name aggregate"],
                 width=width,
             ),
         ]
@@ -416,13 +416,13 @@ def render_clean_help() -> str:
         [
             render_banner("clean command"),
             _help_panel(
-                "fotclaw clean",
-                ["fotclaw clean"],
+                "fot clean",
+                ["fot clean"],
                 [
-                    "Removes FoTClaw-managed agent state, transient traces, and aggregation scratch files.",
+                    "Removes FoT-managed agent state, transient traces, and aggregation scratch files.",
                     "The persistent `insight.md` and `insight.json` files are kept.",
                 ],
-                examples=["fotclaw clean"],
+                examples=["fot clean"],
                 width=width,
             ),
         ]
@@ -461,7 +461,7 @@ def render_help_for_args(args: argparse.Namespace) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("--home", default=None, help="FoTClaw state directory (default: ./.fotclaw or FOTCLAW_HOME)")
+    parser.add_argument("--home", default=None, help="FoT state directory (default: ./.fot or FOT_HOME)")
     parser.add_argument("-h", "--help", action="store_true")
     subparsers = parser.add_subparsers(dest="command")
 
@@ -525,7 +525,7 @@ def render_agent_list(records: list[AgentRecord]) -> str:
     width = terminal_width()
     lines = [render_banner("agent registry")]
     if not records:
-        lines.append(panel("Agents", ["No FoTClaw agents found."], accent=GRAY, width=width))
+        lines.append(panel("Agents", ["No FoT agents found."], accent=GRAY, width=width))
         return "\n".join(lines)
 
     for record in records:
@@ -763,7 +763,7 @@ def main(argv: list[str] | None = None) -> int:
                 return 0
 
             if not raw_args:
-                raise OpenClawError("Use `fotclaw agent --message \"...\"` or `fotclaw agent --name <name>`.")
+                raise OpenClawError("Use `fot agent --message \"...\"` or `fot agent --name <name>`.")
             record = create_background_agent(args.home, raw_args)
             emit(
                 render_success(
@@ -784,7 +784,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if args.command == "show":
-            require(getattr(args, "show_command", None), "Use `fotclaw show agent --name <name>` or `fotclaw show agent --id <agent_id>`.")
+            require(getattr(args, "show_command", None), "Use `fot show agent --name <name>` or `fot show agent --id <agent_id>`.")
             explicit_id = getattr(args, "agent_id_flag", None) or getattr(args, "agent_id", None)
             if getattr(args, "agent_name", None):
                 normalized_name = sanitize_agent_name(args.agent_name)
@@ -817,9 +817,9 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if args.command == "delete":
-            require(getattr(args, "delete_command", None), "Use `fotclaw delete agent --name <name>`.")
+            require(getattr(args, "delete_command", None), "Use `fot delete agent --name <name>`.")
             if getattr(args, "delete_command", None) != "agent":
-                raise OpenClawError("Use `fotclaw delete agent --name <name>`.")
+                raise OpenClawError("Use `fot delete agent --name <name>`.")
             if not getattr(args, "agent_name", None) and not getattr(args, "agent_id", None):
                 raise OpenClawError("Provide `--name <name>` or `--id <agent_id>`.")
             layout = ensure_layout(args.home)
@@ -879,7 +879,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         if args.command == "clean":
-            print_text(render_banner("cleaning FoTClaw state").rstrip())
+            print_text(render_banner("cleaning FoT state").rstrip())
 
             def _clean_progress(message: str) -> None:
                 print_text(f"[clean] {message}")

@@ -48,6 +48,8 @@ POSTPROCESS_TERMINAL_STATUSES = {"idle", "finished", "broken", "skipped"}
 AGGREGATION_AGENT_NAME = "fotaggregation"
 AGGREGATE_RECORD_ID = "agt-aggregate"
 LEGACY_AGGREGATION_AGENT_PREFIX = "fotclaw-aggregate-"
+LEGACY_AGENT_PREFIX = "fotclaw-"
+CURRENT_AGENT_PREFIX = "fot-"
 
 
 def create_background_agent(
@@ -64,7 +66,7 @@ def create_background_agent(
     if not model:
         raise OpenClawError(
             "No OpenClaw model could be resolved. Pass `--model ...` in the create command "
-            "or set FOTCLAW_DEFAULT_MODEL."
+            "or set FOT_DEFAULT_MODEL."
         )
 
     agent_name = sanitize_agent_name(preferred_name) if preferred_name else None
@@ -72,7 +74,7 @@ def create_background_agent(
     existing = load_agent(layout, agent_id)
     if existing is not None and not allow_existing_named:
         raise OpenClawError(f"Agent `{agent_id}` already exists.")
-    openclaw_agent_name = f"fotclaw-{agent_id}"
+    openclaw_agent_name = f"{CURRENT_AGENT_PREFIX}{agent_id}"
     workspace = agent_dir(layout, agent_id) / "workspace"
     workspace.mkdir(parents=True, exist_ok=True)
     if existing is not None:
@@ -98,7 +100,7 @@ def create_background_agent(
         record.stop_requested = False
         record.usage = {}
         record.auto_aggregated = False
-        record.session_id = f"fotclaw_{agent_id}"
+        record.session_id = f"fot_{agent_id}"
         record.workspace = str(workspace)
         record.stdout_path = str(agent_dir(layout, agent_id) / "stdout.log")
         record.stderr_path = str(agent_dir(layout, agent_id) / "stderr.log")
@@ -116,7 +118,7 @@ def create_background_agent(
             status="starting",
             created_at=time.time(),
             updated_at=time.time(),
-            session_id=f"fotclaw_{agent_id}",
+            session_id=f"fot_{agent_id}",
             workspace=str(workspace),
             stdout_path=str(agent_dir(layout, agent_id) / "stdout.log"),
             stderr_path=str(agent_dir(layout, agent_id) / "stderr.log"),
@@ -181,7 +183,7 @@ def ensure_named_agent(home: str | Path | None, name: str, raw_agent_args: list[
         model = config.get("default_model") or resolve_default_model()
         if not model:
             raise OpenClawError("No default model is configured for named agent creation.")
-        openclaw_agent_name = f"fotclaw-{agent_id}"
+        openclaw_agent_name = f"{CURRENT_AGENT_PREFIX}{agent_id}"
         workspace = agent_dir(layout, agent_id) / "workspace"
         with _agent_creation_lock(layout):
             ensure_agent_exists(
@@ -200,7 +202,7 @@ def ensure_named_agent(home: str | Path | None, name: str, raw_agent_args: list[
             status="created",
             created_at=time.time(),
             updated_at=time.time(),
-            session_id=f"fotclaw_{agent_id}",
+            session_id=f"fot_{agent_id}",
             workspace=str(actual_workspace),
             stdout_path=str(agent_dir(layout, agent_id) / "stdout.log"),
             stderr_path=str(agent_dir(layout, agent_id) / "stderr.log"),
@@ -269,7 +271,7 @@ def run_agent_supervisor(home: str | Path | None, agent_id: str) -> AgentRecord:
             workspace=workspace,
             session_id=record.session_id,
             runtime_args=record.runtime_args,
-            timeout_seconds=float(os.environ.get("FOTCLAW_AGENT_TIMEOUT_SECONDS", "7200")),
+            timeout_seconds=float(os.environ.get("FOT_AGENT_TIMEOUT_SECONDS") or os.environ.get("FOTCLAW_AGENT_TIMEOUT_SECONDS", "7200")),
             openclaw_path=config.get("openclaw_path"),
         )
     except BaseException as exc:
@@ -364,7 +366,7 @@ def _extract_reasoning_trace(
         workspace=record.workspace,
         openclaw_path=config.get("openclaw_path"),
         output_dir=str(layout.traces_dir),
-        timeout_seconds=float(os.environ.get("FOTCLAW_TRACE_TIMEOUT_SECONDS", "7200")),
+        timeout_seconds=float(os.environ.get("FOT_TRACE_TIMEOUT_SECONDS") or os.environ.get("FOTCLAW_TRACE_TIMEOUT_SECONDS", "7200")),
     )
     return reader.extract_from_trace(problem=record.original_message, solution=transcript_text)
 
@@ -453,7 +455,7 @@ def _run_aggregate_job(home: str | Path | None) -> dict[str, Any]:
             openclaw_path=config.get("openclaw_path"),
             input_dirs=[str(layout.traces_dir)],
             num_insights=None,
-            timeout_seconds=float(os.environ.get("FOTCLAW_AGGREGATE_TIMEOUT_SECONDS", "7200")),
+            timeout_seconds=float(os.environ.get("FOT_AGGREGATE_TIMEOUT_SECONDS") or os.environ.get("FOTCLAW_AGGREGATE_TIMEOUT_SECONDS", "7200")),
         )
         result = server.aggregate_and_build_encyclopedia(
             json_files=[str(path) for path in trace_files],
@@ -535,7 +537,7 @@ def start_background_aggregate(home: str | Path | None) -> AgentRecord:
             status="starting",
             created_at=time.time(),
             updated_at=time.time(),
-            session_id="fotclaw_aggregate",
+            session_id="fot_aggregate",
             workspace=str(layout.aggregate_dir / "workspace"),
             stdout_path=str(layout.aggregate_dir / "stdout.log"),
             stderr_path=str(layout.aggregate_dir / "stderr.log"),
@@ -684,7 +686,7 @@ def delete_agent(home: str | Path | None, *, agent_id: str | None = None, name: 
         raise OpenClawError("Could not resolve an agent id.")
 
     record = load_agent(layout, resolved_id)
-    openclaw_name = record.openclaw_agent_name if record else f"fotclaw-{resolved_id}"
+    openclaw_name = record.openclaw_agent_name if record else f"{CURRENT_AGENT_PREFIX}{resolved_id}"
     stopped = False
     local_removed = False
     openclaw_removed = False
@@ -744,7 +746,7 @@ def show_aggregate_agent(home: str | Path | None) -> dict[str, Any]:
     config = load_config(layout)
     record = load_agent(layout, AGGREGATE_RECORD_ID)
     if record is None:
-        raise OpenClawError("Aggregate agent has not been created yet. Run `fotclaw aggregate` first.")
+        raise OpenClawError("Aggregate agent has not been created yet. Run `fot aggregate` first.")
     record = reconcile_agent(layout, record)
     insight_text = layout.insight_markdown.read_text(encoding="utf-8") if layout.insight_markdown.exists() else ""
     stdout = Path(record.stdout_path).read_text(encoding="utf-8") if record.stdout_path and Path(record.stdout_path).exists() else ""
@@ -771,7 +773,7 @@ def clean_agents(home: str | Path | None, reporter: Any | None = None) -> dict[s
             reporter(message)
 
     records = list_store_agents(layout)
-    report(f"Scanning {len(records)} FoTClaw agent(s)...")
+    report(f"Scanning {len(records)} FoT agent(s)...")
     for record in records:
         refreshed = reconcile_agent(layout, record)
         report(f"Cleaning {refreshed.id}...")

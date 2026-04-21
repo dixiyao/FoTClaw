@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fotclaw"
 version = "0.1.0"
-description = "FoTClaw: multi-process OpenClaw orchestration with FoT trace aggregation"
+description = "FoT: multi-process OpenClaw orchestration with FoT trace aggregation"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
@@ -14,8 +14,7 @@ dependencies = []
 dev = ["pytest>=8.0"]
 
 [project.scripts]
-fotclaw = "fotclaw.cli:main"
-fotclean = "fotclaw.cli:clean_main"
+fot = "fotclaw.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -1,3 +1,4 @@
 *.pyc
 /tests
 /src/fotclaw.egg-info
+/.fot

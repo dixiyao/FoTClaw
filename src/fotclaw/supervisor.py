@@ -6,13 +6,13 @@ from fotclaw.manager import delete_agent, run_agent_bootstrap, run_agent_postpro
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Internal FoTClaw supervisor process.")
-    parser.add_argument("--home", required=True, help="FoTClaw state directory")
+    parser = argparse.ArgumentParser(description="Internal FoT supervisor process.")
+    parser.add_argument("--home", required=True, help="FoT state directory")
     parser.add_argument("--bootstrap", action="store_true", help="Bootstrap the agent before execution")
     parser.add_argument("--postprocess", action="store_true", help="Run FoT postprocessing instead of execution")
     parser.add_argument("--aggregate", action="store_true", help="Run background aggregation")
-    parser.add_argument("--delete-agent-id", default=None, help="Delete the given FoTClaw agent id")
-    parser.add_argument("--delete-agent-name", default=None, help="Delete the given FoTClaw agent name")
+    parser.add_argument("--delete-agent-id", default=None, help="Delete the given FoT agent id")
+    parser.add_argument("--delete-agent-name", default=None, help="Delete the given FoT agent name")
     parser.add_argument("agent_id", nargs="?", help="Agent id to supervise")
     args = parser.parse_args()
     if args.delete_agent_id or args.delete_agent_name:

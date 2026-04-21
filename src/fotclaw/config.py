@@ -24,7 +24,7 @@ DEFAULT_RUNTIME_STATE: dict[str, Any] = {
 }
 
 def default_model_id() -> str:
-    value = os.environ.get("FOTCLAW_DEFAULT_MODEL")
+    value = os.environ.get("FOT_DEFAULT_MODEL") or os.environ.get("FOTCLAW_DEFAULT_MODEL")
     if value and value.strip():
         return value.strip()
     return "google/gemini-3.1-pro-preview"
@@ -62,10 +62,10 @@ class Layout:
 
 
 def default_home() -> Path:
-    value = os.environ.get("FOTCLAW_HOME")
+    value = os.environ.get("FOT_HOME") or os.environ.get("FOTCLAW_HOME")
     if value:
         return Path(value).expanduser().resolve()
-    return (project_root() / ".fotclaw").resolve()
+    return (project_root() / ".fot").resolve()
 
 
 def project_root() -> Path:
@@ -202,7 +202,7 @@ def render_settings_yaml(settings: dict[str, Any]) -> str:
         "auto_aggregate_min_interval_seconds",
     ]
     comments = {
-        "default_model": "Default model for new FoTClaw agents when `--model` is omitted.",
+        "default_model": "Default model for new FoT agents when `--model` is omitted.",
         "aggregation_model": "Model used for FoT reflection/aggregation. Keep this aligned with your OpenClaw setup.",
         "openclaw_path": "Path to the OpenClaw CLI binary.",
         "local_reasoning_class": "Python class path for the FoT local pipeline, for example package.module:CustomLocalReasoner.",
@@ -211,7 +211,7 @@ def render_settings_yaml(settings: dict[str, Any]) -> str:
         "auto_aggregate_trace_threshold": "Auto aggregate once at least this many reasoning traces exist.",
         "auto_aggregate_min_interval_seconds": "Minimum delay between automatic aggregation runs.",
     }
-    lines = ["# FoTClaw editable settings", "# Edit this file directly.", ""]
+    lines = ["# FoT editable settings", "# Edit this file directly.", ""]
     for key in ordered_keys:
         lines.append(f"# {comments[key]}")
         lines.append(f"{key}: {_to_yaml_scalar(settings.get(key, defaults[key]))}")

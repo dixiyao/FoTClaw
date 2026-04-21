@@ -1,7 +1,7 @@
-# FoTClaw editable settings
+# FoT editable settings
 # Edit this file directly.
 
-# Default model for new FoTClaw agents when `--model` is omitted.
+# Default model for new FoT agents when `--model` is omitted.
 default_model: "google/gemini-3.1-pro-preview"
 
 # Model used for FoT reflection/aggregation. Keep this aligned with your OpenClaw setup.

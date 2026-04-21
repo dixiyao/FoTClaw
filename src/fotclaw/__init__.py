@@ -1,4 +1,4 @@
-"""FoTClaw package."""
+"""FoT package implementation."""
 
 __all__ = ["__version__"]
 

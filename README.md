@@ -2,7 +2,7 @@
 
 # FoT
 
-    [![arXiv](https://img.shields.io/badge/arXiv-2604.16778-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2604.16778)
+[![arXiv](https://img.shields.io/badge/arXiv-2604.16778-b31b1b?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2604.16778)
 [![Homepage](https://img.shields.io/badge/Homepage-Visit%20Site-2563eb?style=for-the-badge&logo=googlechrome&logoColor=white)](https://dixiyao.github.io/fot)
 
 </div>
